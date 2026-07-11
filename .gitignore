@@ -1,0 +1,16 @@
+# Build output
+/mini-redis
+*.exe
+
+# Test & coverage
+*.test
+*.out
+coverage.out
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
