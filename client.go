@@ -15,6 +15,13 @@ func handleClient(conn net.Conn) {
 	for scanner.Scan() {
 		text := scanner.Text()
 		fmt.Println("Received:", text)
+
+		_, err := conn.Write([]byte(text + "\n"))
+
+		if err != nil {
+			fmt.Println("writing error:", err)
+			break
+		}
 	}
 
 	if err := scanner.Err(); err != nil {
