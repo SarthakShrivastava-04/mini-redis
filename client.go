@@ -4,10 +4,10 @@ import (
 	"bufio"
 	"fmt"
 	"net"
+	"strings"
 )
 
 func handleClient(conn net.Conn) {
-
 	defer conn.Close()
 
 	scanner := bufio.NewScanner(conn)
@@ -16,10 +16,17 @@ func handleClient(conn net.Conn) {
 		text := scanner.Text()
 		fmt.Println("Received:", text)
 
-		_, err := conn.Write([]byte(text + "\n"))
+		parts := strings.Fields(text)
 
+		if len(parts) == 0 {
+			continue
+		}
+
+		response := executeCommand(parts)
+
+		_, err := conn.Write([]byte(response))
 		if err != nil {
-			fmt.Println("writing error:", err)
+			fmt.Println("Write error:", err)
 			break
 		}
 	}
@@ -29,5 +36,4 @@ func handleClient(conn net.Conn) {
 	}
 
 	fmt.Println("Client disconnected")
-
 }
