@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
+	"time"
 )
 
 func executeCommand(parts []string) string {
@@ -29,9 +31,18 @@ func executeCommand(parts []string) string {
 			return "ERR wrong GET command\n"
 		}
 
-		mu.RLock()
+		mu.Lock()
+		defer mu.Unlock()
+
+		if expiryTime, isThere := expire[parts[1]]; isThere {
+			if time.Now().After(expiryTime) {
+				delete(store, parts[1])
+				delete(expire, parts[1])
+				return "ERR invalid key\n"
+			}
+		}
+
 		value, found := store[parts[1]]
-		mu.RUnlock()
 
 		if !found {
 			return "ERR invalid key\n"
@@ -86,6 +97,7 @@ func executeCommand(parts []string) string {
 		}
 
 		mu.RLock()
+		defer mu.RUnlock()
 
 		keys := make([]string, 0, len(store))
 
@@ -93,9 +105,28 @@ func executeCommand(parts []string) string {
 			keys = append(keys, key)
 		}
 
-		mu.RUnlock()
-
 		return strings.Join(keys, " ") + "\n"
+
+	case "EXPIRE":
+		if len(parts) != 3 {
+			return "ERR wrong EXPIRE command\n"
+		}
+
+		seconds, err := strconv.Atoi(parts[2])
+		if err != nil {
+			return "ERR invalid expiry time\n"
+		}
+
+		mu.Lock()
+		defer mu.Unlock()
+
+		if _, found := store[parts[1]]; !found {
+			return "ERR invalid key\n"
+		}
+
+		expire[parts[1]] = time.Now().Add(time.Duration(seconds) * time.Second)
+
+		return "OK\n"
 
 	default:
 		return "ERR unknown command\n"
