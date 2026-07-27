@@ -18,4 +18,10 @@ func gracefulShutdown(listener net.Listener) {
 	fmt.Println("\nShutting down server...")
 
 	listener.Close()
+
+	fmt.Println("Waiting for clients to finish...")
+
+	wg.Wait()
+
+	fmt.Println("Shutdown complete.")
 }

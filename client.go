@@ -8,6 +8,8 @@ import (
 )
 
 func handleClient(conn net.Conn) {
+	defer wg.Done()
+
 	defer conn.Close()
 
 	scanner := bufio.NewScanner(conn)

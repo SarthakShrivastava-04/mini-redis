@@ -16,13 +16,14 @@ func startServer(listener net.Listener) error {
 			if errors.Is(err, net.ErrClosed) {
 				return nil
 			}
-			
+
 			fmt.Println("Accept error:", err)
 			continue
 		}
 
 		fmt.Println("Client connected")
-
+        
+	    wg.Add(1)
 		go handleClient(conn)
 	}
 }
