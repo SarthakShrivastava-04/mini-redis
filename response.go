@@ -55,12 +55,14 @@ func executeCommand(parts []string) string {
 			return "ERR wrong DEL command\n"
 		}
 
+        mu.Lock()
+
 		if _, found := store[parts[1]]; !found {
 			return "ERR invalid key\n"
 		}
 
-		mu.Lock()
 		delete(store, parts[1])
+		
 		mu.Unlock()
 
 		return "DELETED\n"

@@ -13,7 +13,6 @@ This project implements a subset of Redis commands over TCP while focusing on ne
 - TTL support with automatic background cleanup of expired keys
 - Supports core Redis commands: `PING`, `SET`, `GET`, `DEL`, `EXISTS`, `COUNT`, `KEYS`, and `EXPIRE`
 - Graceful shutdown with proper connection cleanup
-- Unit tests for command execution and store operations
 
 ---
 
